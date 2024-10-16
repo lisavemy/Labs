@@ -1,0 +1,22 @@
+#include <iostream>
+#include <limits>
+#include <cmath>
+int main() {
+ int a, b, c;
+ std::cout << "введите сторону А: ";
+ std::cin >> a;
+    std::cout << "введите сторону В: ";
+ std::cin >> b;
+ std::cout << "введите сторону С: ";
+ std::cin >> c;
+    
+    int s;
+    s = (a + b+ c) /2 ;
+    int x;
+    x = (s*(s-a)*(s-b)*(s-c));
+    int f;
+    f = sqrt(x);
+    std::cout << "Площадь треугольника равна:";
+    std::cout << f;
+ return 0;
+}
