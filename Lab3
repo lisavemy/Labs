@@ -1,0 +1,22 @@
+#include <iostream>
+
+int main() {
+    unsigned int x;
+    int i;
+
+    std::cout << "Введите x (0 < x < 10^9): ";
+    std::cin >> x;
+    
+    std::cout << "Введите i (0 <= i < 32): ";
+    std::cin >> i;
+
+    if (i < 0 || i >= 32) {
+        return 1;
+    }
+
+    x |= (1U << i);
+
+    std::cout << x << std::endl;
+
+    return 0;
+}
