@@ -1,1 +1,110 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int A, B, C;
+
+    cout << "Введите A: "<< endl;
+    cin >> A;
+    cout << "Введите B: "<< endl;
+    cin >> B;
+    cout << "Введите C: "<< endl;
+    cin >> C;
+
+    if (B <= 0 || A <= 0 || C <= 0) {
+        return 1;
+    }
+
+    if (A % B == 0) {
+        cout << "Результат: " << A / B - C << endl;
+    }
+    else {
+        cout << "Результат: " << (A + B) * C << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int n;
+
+    cout << "Введите месяц от 1 до 12: ";
+    cin >> n;
+
+    switch (n) {
+        case 1:
+            cout << "Январь" << endl;
+            break;
+        case 2:
+            cout << "Февраль" << endl;
+            break;
+        case 3:
+            cout << "Март" << endl;
+            break;
+        case 4:
+            cout << "Апрель" << endl;
+            break;
+        case 5:
+            cout << "Май" << endl;
+            break;
+        case 6:
+            cout << "Июнь" << endl;
+            break;
+        case 7:
+            cout << "Июль" << endl;
+            break;
+        case 8:
+            cout << "Август" << endl;
+            break;
+        case 9:
+            cout << "Сентябрь" << endl;
+            break;
+        case 10:
+            cout << "Октябрь" << endl;
+            break;
+        case 11:
+            cout << "Ноябрь" << endl;
+            break;
+        case 12:
+            cout << "Декабрь" << endl;
+            break;
+        default:
+            cout << "Такого месяца не существует" << endl;
+            break;
+    }
+
+    return 0;
+}
+
+
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int x;
+
+    cout << "Введите x (-1 / 1): ";
+    cin >> x;
+
+    if (x == -1) {
+        cout << "Negative number" << endl;
+    } else if (x == 1) {
+        cout << "Positive number" << endl;
+    } else {
+        cout << "Ошибка" << endl;
+    }
+
+    return 0;
+}
 
