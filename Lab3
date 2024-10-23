@@ -1,16 +1,19 @@
 #include <iostream>
 
 int main() {
-    unsigned int x;
-    int i;
+    int x, i;
 
     std::cout << "Введите x (0 < x < 10^9): ";
     std::cin >> x;
     
-    std::cout << "Введите i (0 <= i < 32): ";
+    std::cout << "Введите i (0 < i < 32): ";
     std::cin >> i;
 
     if (i < 0 || i >= 32) {
+        return 1;
+    }
+
+    if (x < 0 || x >= 10^9) {
         return 1;
     }
 
