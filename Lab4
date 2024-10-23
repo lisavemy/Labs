@@ -3,6 +3,7 @@
 using namespace std;
 
 int main() {
+    setlocale(LC_ALL, "RU");
     int A, B, C;
 
     cout << "Введите A: "<< endl;
@@ -35,6 +36,7 @@ int main() {
 using namespace std;
 
 int main() {
+    setlocale(LC_ALL, "RU");
     int n;
 
     cout << "Введите месяц от 1 до 12: ";
@@ -92,6 +94,7 @@ int main() {
 using namespace std;
 
 int main() {
+    setlocale(LC_ALL, "RU");
     int x;
 
     cout << "Введите x (-1 или 1): ";
