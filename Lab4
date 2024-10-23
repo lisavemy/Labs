@@ -6,18 +6,21 @@ int main() {
     setlocale(LC_ALL, "RU");
     int A, B, C;
 
-    cout << "Введите A: "<< endl;
+    cout << "Введите A: " << endl;
     cin >> A;
-    cout << "Введите B: "<< endl;
+    cout << "Введите B: " << endl;
     cin >> B;
-    cout << "Введите C: "<< endl;
+    cout << "Введите C: " << endl;
     cin >> C;
 
     if (B <= 0 || A <= 0 || C <= 0) {
         return 1;
     }
 
-    if (A % B == 0) {
+    if (A % B == 0 & B > C) {
+        cout << "Результат: " << A / B + C << endl;
+    }
+    if (A % B == 0 & B < C) {
         cout << "Результат: " << A / B - C << endl;
     }
     else {
@@ -26,7 +29,6 @@ int main() {
 
     return 0;
 }
-
 
 
 
