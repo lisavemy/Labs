@@ -94,17 +94,19 @@ using namespace std;
 int main() {
     int x;
 
-    cout << "Введите x (-1 / 1): ";
+    cout << "Введите x (-1 или 1): ";
     cin >> x;
-
-    if (x == -1) {
-        cout << "Negative number" << endl;
-    } else if (x == 1) {
-        cout << "Positive number" << endl;
-    } else {
-        cout << "Ошибка" << endl;
+    switch(x) {
+        case -1:
+            cout << "Negative number" << endl;
+            break;
+        case 1:
+            cout << "Positive number" << endl;
+            break;
+        default:
+            cout << "Ошибка" << endl;
+            break;
     }
 
     return 0;
 }
-
