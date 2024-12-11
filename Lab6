@@ -1,0 +1,202 @@
+//1
+
+int main() {
+	short j; //длина массива
+	bool same_values = false; //2 одинак знач в массиве
+	std::cout << "Введите длину массива" << std::endl;
+	std::cin >> j;
+	int array[10000] = {};
+	std::cout << "Введите элементы массива" << std::endl;
+	for (short i = 0; i < j; i++) {
+		std::cin >> array[i];
+	}
+	std::cout << std::endl;
+	for (short a = 0; a < j - 1; a++)
+		for (short b = a + 1; b < j; b++) { //поиск одинак знач
+			if (array[a] == array[b]) {
+				same_values = true;
+				break;
+			}
+		}
+	if (same_values) { //цикл сортировки
+		for (short a = 0; a < j - 1; a++)
+			for (short b = a + 1; b < j; b++){
+				if ((array[b] % 10) > (array[a] % 10)) {
+					std::swap(array[a], array[b]);
+				}
+		}
+		for (short i = 0; i < j; i++) { //печать массива после сортировки
+			std::cout << array[i] << " ";
+		}
+	}
+	else
+		std::cout << "Одинаковых чисел не найдено" << std::endl;
+	return 0;
+}
+
+//2
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int first(int number) {
+    while (number >= 10) number /= 10;
+    return number;
+}
+
+int product(int number) {
+    int product = 1;
+    while (number > 0) {
+        product *= number % 10;
+        number /= 10;
+    }
+    return product;
+}
+
+int main() {
+    int n;
+    cout << "Введите количество элементов: ";
+    cin >> n;
+
+    vector<int> array(n);
+    cout << "Введите элементы последовательности: ";
+    for (int &num : array) cin >> num;
+
+    sort(array.begin(), array.end(), [](int a, int b) {
+        if (first(a) != first(b)) return first(a) < first(b);
+        if (product(a) != product(b)) return product(a) < product(b);
+        return a < b;
+    });
+
+    cout << "Отсортированная последовательность: ";
+    for (int num : array) cout << num << " ";
+    
+    return 0;
+}
+
+//3
+
+#include <iostream>
+
+using namespace std;
+int main() {
+	int i, j;
+	cout << "Введите высоту и длину матрицы" << endl;
+	cin >> i >> j;
+	int summ;
+	int minsumm = 2000000000;
+	int minnumber;
+	int matrix[100][100] = {};
+	cout << "Введите элементы матрицы: " << std::endl;
+	for (short a = 0; a < i; a++)
+		for (short b = 0; b < j; b++) {
+			cin >> matrix[a][b];
+		}
+	cout << endl;
+	for (short b = 0; b < j; b++) { //a строки и b столбцы
+		summ = 0;
+		for (short a = 0; a < i; a++) {
+			summ += matrix[a][b];
+		}
+		if (summ < minsumm) {
+			minsumm = summ;
+			minnumber = b;
+		}
+	}
+	for (short a = 0; a < i; a++) {
+		matrix[a][minnumber] += 3;
+	}
+	for (short a = 0; a < i; a++) {
+		for (short b = 0; b < j; b++) {
+			cout << matrix[a][b] << " ";
+		}
+		cout << endl;
+	}
+	return 0;
+}
+
+
+//4
+
+#include <iostream>
+#include <set>
+
+int main() {
+    int n;
+    std::cout << "Введите количество элементов: ";
+    std::cin >> n;
+
+    std::set<int> unique;
+
+    std::cout << "Введите элементы массива: ";
+    for (int i = 0; i < n; ++i) {
+        int element;
+        std::cin >> element;
+        unique.insert(element); // добавл элемент в множество
+    }
+
+    std::cout << "Уникальные элементы: ";
+    for (const int& elem : unique) {
+        std::cout << elem << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
+
+//5
+
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+
+bool UniqueDigits(int number) {
+    std::unordered_set<char> digits;
+    while (number > 0) {
+        char digit = number % 10 + '0'; 
+        if (digits.find(digit) != digits.end()) {
+            return false; 
+        }
+        digits.insert(digit); 
+        number /= 10; 
+    }
+    return true; // все цифры уникальны
+}
+
+bool Product14(int number) {
+    return (number % 14 == 0);
+}
+
+int main() {
+    int n;
+    std::cout << "Введите количество чисел в последовательности (n <= 10000): ";
+    std::cin >> n;
+
+    std::vector<int> numbers(n);
+    std::cout << "Введите последовательность чисел:\n";
+    for (int i = 0; i < n; ++i) {
+        std::cin >> numbers[i];
+    }
+
+    std::vector<int> result;
+
+
+    for (int number : numbers) {
+        if (!UniqueDigits(number)) {
+            result.push_back(number); // сохраняем, не все цифры уникальны
+            if (Product14(number)) {
+                result.push_back(number); // дублируем, произведение кратно 14
+            }
+        }
+    }
+
+    std::cout << "Результат: ";
+    for (int number : result) {
+        std::cout << number << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
