@@ -1,0 +1,15 @@
+#include <stdio.h>
+
+void printIntBytes(int num) {
+    unsigned char *bytePtr = (unsigned char *)&num;
+    
+    for (size_t i = 0; i < sizeof(int); i++) {
+        printf("Byte %zu: %u\n", i, bytePtr[i]);
+    }
+}
+
+int main() {
+    int number = 242322; 
+    printIntBytes(number);
+    return 0;
+}
