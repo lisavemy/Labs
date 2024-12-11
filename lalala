@@ -1,0 +1,129 @@
+//ДОПОЛНИТЕЛЬНЫЕ ЗАДАЧКИ
+
+// Счастливые билетики
+#include <iostream>
+#include <vector>
+
+int main() {
+    
+    const int digits = 10; 
+    const int half_length = 3; 
+    const int max_sum = half_length * (digits - 1); // макс сумм 3ц
+
+    std::vector<int> sum_count(max_sum + 1, 0);
+
+    for (int i = 0; i < digits; ++i) {
+        for (int j = 0; j < digits; ++j) {
+            for (int k = 0; k < digits; ++k) {
+                int sum = i + j + k;
+                sum_count[sum]++;
+            }
+        }
+    }
+
+    long long luckytickets = 0;
+
+    for (int sum = 0; sum <= max_sum; ++sum) {
+        luckytickets += static_cast<long long>(sum_count[sum]) * sum_count[sum];
+    }
+
+    std::cout << "Количество вариаций счастливых трамвайных билетиков: " << luckytickets << std::endl;
+
+    return 0;
+}
+
+// Грузоперевозки
+
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+int main() {
+    int Q1, P1, Q2, P2, A;
+    std::cout << "Вместимость первого грузовика: ";
+    cin >> Q1;
+     std::cout << "\nСтоимость поездки первого грузовика: ";
+    cin >> P1;
+    std::cout << "\nВместимость второго грузовика: ";
+    cin >> Q2;
+    std::cout << "\nСтоимость поездки второго грузовика: ";
+    cin >> P2;
+    std::cout << "\nВес груза: ";
+    cin >> A;
+
+    // поездки для 1 грузовика
+    int t1 = (A + Q1 - 1) / Q1;
+    int cost1 = t1 * P1;
+
+    // поездки для 2 грузовика
+    int t2 = (A + Q2 - 1) / Q2; 
+    int cost2 = t2 * P2;
+
+
+    int min_cost = min(cost1, cost2);
+    cout << "Минимальная цена:" << min_cost << endl;
+
+    return 0;
+}
+
+// Удаление и дублирование
+
+#include <iostream>
+#include <vector>
+#include <numeric>
+
+using namespace std;
+
+
+int digitsumm(int number) {
+    int sum = 0;
+    while (number > 0) {
+        sum += number % 10;
+        number /= 10;
+    }
+    return sum;
+}
+
+
+int MultipDigits(int number) {
+    int product = 1;
+    while (number > 0) {
+        product *= number % 10;
+        number /= 10;
+    }
+    return product;
+}
+
+int main() {
+    int n;
+    cout << "Введите количество чисел (n <= 10000): ";
+    cin >> n;
+
+    vector<int> A(n);
+    cout << "Введите последовательность чисел:\n";
+    for (int i = 0; i < n; ++i) {
+        cin >> A[i];
+    }
+
+    vector<int> result;
+
+    for (int num : A) {
+        if (digitsumm(num) != 18) {
+            result.push_back(num); 
+            if (MultipDigits(num) % 35 == 0 ) {
+                result.push_back(num);
+            }
+        }
+    }
+
+
+    cout << "Результат:\n";
+    for (int num : result) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
