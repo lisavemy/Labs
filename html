@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Трекер привычек с графиками</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #ff9ff3;
+            --primary-dark: #f368e0;
+            --background: #fff0f6;
+            --card: #fff9fc;
+            --text: #574b4f;
+            --shadow: 0 4px 15px rgba(255, 159, 243, 0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+        }
+
+        .tasks-section {
+            flex: 1;
+            padding: 20px;
+            max-width: 70%;
+        }
+
+        .stats-section {
+            width: 30%;
+            background: white;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+            overflow-y: auto;
+        }
+
+        .container {
+            max-width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .task-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            padding: 3px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .icon-select {
+            position: relative;
+            width: 40px;
+        }
+
+        .selected-icon {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .icon-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 200px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            z-index: 10;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .icon-dropdown.show {
+            display: grid;
+        }
+
+        .icon-option {
+            font-size: 18px;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .icon-option:hover {
+            background: #f0f0f0;
+        }
+
+        .add-btn {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #3a5a8f;
+        }
+
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .task-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+            cursor: pointer;
+            position: relative;
+            border-left: 4px solid #4a6fa5;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .task-card.active {
+            box-shadow: 0 0 0 2px #4a6fa5;
+        }
+
+        .task-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: inherit;
+        }
+
+        .task-name {
+            font-weight: 500;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .task-time {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .task-today {
+            font-size: 12px;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .task-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            grid-column: 1 / -1;
+            margin-top: 40px;
+        }
+
+        /* Стили для статистики */
+        .chart-container {
+            margin-top: 20px;
+            position: relative;
+            height: 250px;
+        }
+
+        .stats-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .stats-tab.active {
+            border-bottom: 2px solid var(--primary-dark);
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        .stats-summary {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .stats-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .tasks-section, .stats-section {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="tasks-section">
+            <div class="container">
+                <h1>🌸 Трекер привычек</h1>
+                
+                <div class="add-form">
+                    <input type="text" class="task-input" id="taskInput" placeholder="Название привычки">
+                    
+                    <input type="color" class="color-picker" id="colorPicker" value="#4a6fa5">
+                    
+                    <div class="icon-select">
+                        <div class="selected-icon" id="selectedIcon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="icon-dropdown" id="iconDropdown"></div>
+                    </div>
+                    
+                    <button class="add-btn" id="addBtn">Добавить</button>
+                </div>
+                
+                <div class="tasks-grid" id="tasksGrid">
+                    <div class="empty-state">Добавьте свою первую привычку</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <h2><i class="fas fa-chart-pie"></i> Статистика</h2>
+            
+            <div class="stats-tabs">
+                <div class="stats-tab active" data-period="week">Неделя</div>
+                <div class="stats-tab" data-period="month">Месяц</div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="statsChart"></canvas>
+            </div>
+            
+            <div class="stats-summary" id="statsSummary">
+                <!-- Сюда будет вставляться текстовая статистика -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Доступные иконки (Font Awesome)
+        const icons = [
+            'book', 'dumbbell', 'paint-brush', 'music',
+            'apple-alt', 'running', 'moon', 'sun',
+            'utensils', 'laptop', 'tv', 'gamepad',
+            'tree', 'shopping-basket', 'bed', 'bicycle'
+        ];
+
+        // DOM элементы
+        const taskInput = document.getElementById('taskInput');
+        const colorPicker = document.getElementById('colorPicker');
+        const selectedIcon = document.getElementById('selectedIcon');
+        const iconDropdown = document.getElementById('iconDropdown');
+        const addBtn = document.getElementById('addBtn');
+        const tasksGrid = document.getElementById('tasksGrid');
+        const statsTabs = document.querySelectorAll('.stats-tab');
+        const statsChartCtx = document.getElementById('statsChart').getContext('2d');
+        const statsSummary = document.getElementById('statsSummary');
+
+        // Состояние приложения
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let currentIcon = 'fas fa-plus';
+        let activeTask = null;
+        let startTime = null;
+        let timerInterval = null;
+        let todayTotal = {};
+        let statsChart = null;
+        let currentPeriod = 'week';
+
+        // Инициализация
+        function init() {
+            renderIcons();
+            renderTasks();
+            loadTodayTotals();
+            setupEventListeners();
+            updateStats();
+        }
+
+        // Рендер иконок в dropdown
+        function renderIcons() {
+            iconDropdown.innerHTML = '';
+            
+            icons.forEach(icon => {
+                const iconEl = document.createElement('div');
+                iconEl.className = 'icon-option';
+                iconEl.innerHTML = `<i class="fas fa-${icon}"></i>`;
+                
+                iconEl.addEventListener('click', () => {
+                    currentIcon = `fas fa-${icon}`;
+                    selectedIcon.innerHTML = `<i class="${currentIcon}"></i>`;
+                    iconDropdown.classList.remove('show');
+                });
+                
+                iconDropdown.appendChild(iconEl);
+            });
+        }
+
+        // Рендер задач
+        function renderTasks() {
+            tasksGrid.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                tasksGrid.innerHTML = '<div class="empty-state">Добавьте свою первую привычку</div>';
+                return;
+            }
+            
+            tasks.forEach((task, index) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task-card';
+                taskEl.style.borderLeftColor = task.color;
+                
+                if (activeTask === index) {
+                    taskEl.classList.add('active');
+                }
+                
+                taskEl.innerHTML = `
+                    <button class="delete-btn" data-index="${index}">×</button>
+                    <div class="task-icon"><i class="${task.icon}"></i></div>
+                    <div class="task-name">${task.name}</div>
+                    <div class="task-time">${activeTask === index ? formatTime(Date.now() - startTime) : '00:00:00'}</div>
+                    <div class="task-today">Сегодня: ${formatTime(todayTotal[index] || 0)}</div>
+                `;
+                
+                taskEl.addEventListener('click', () => toggleTask(index));
+                tasksGrid.appendChild(taskEl);
+            });
+            
+            // Обработчики для кнопок удаления
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteTask(parseInt(btn.dataset.index));
+                });
+            });
+        }
+
+        // Добавление задачи
+        function addTask() {
+            const name = taskInput.value.trim();
+            const color = colorPicker.value;
+            
+            if (name && currentIcon !== 'fas fa-plus') {
+                tasks.push({
+                    name,
+                    color,
+                    icon: currentIcon
+                });
+                
+                saveTasks();
+                taskInput.value = '';
+                currentIcon = 'fas fa-plus';
+                selectedIcon.innerHTML = '<i class="fas fa-plus"></i>';
+                renderTasks();
+                updateStats();
+            }
+        }
+
+        // Удаление задачи
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveTasks();
+            if (activeTask === index) {
+                stopTimer();
+            } else if (activeTask > index) {
+                activeTask--;
+            }
+            renderTasks();
+            updateStats();
+        }
+
+        // Переключение задачи (старт/стоп)
+        function toggleTask(index) {
+            if (activeTask === index) {
+                stopTimer();
+            } else {
+                if (activeTask !== null) {
+                    stopTimer();
+                }
+                startTimer(index);
+            }
+        }
+
+        // Запуск таймера
+        function startTimer(index) {
+            activeTask = index;
+            startTime = Date.now();
+            
+            timerInterval = setInterval(() => {
+                updateActiveTask();
+            }, 1000);
+            
+            updateActiveTask();
+            renderTasks();
+        }
+
+        // Остановка таймера
+        function stopTimer() {
+            if (activeTask === null) return;
+            
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            
+            // Сохраняем время для текущего дня
+            const today = new Date().toLocaleDateString();
+            todayTotal[activeTask] = (todayTotal[activeTask] || 0) + duration;
+            saveTodayTotals();
+            
+            clearInterval(timerInterval);
+            activeTask = null;
+            startTime = null;
+            
+            renderTasks();
+            updateStats();
+        }
+
+        // Обновление активной задачи
+        function updateActiveTask() {
+            if (activeTask === null) return;
+            
+            const currentTime = Date.now() - startTime;
+            const totalTime = (todayTotal[activeTask] || 0) + currentTime;
+            
+            const taskEls = document.querySelectorAll('.task-card');
+            if (taskEls[activeTask]) {
+                const timeEl = taskEls[activeTask].querySelector('.task-time');
+                const todayEl = taskEls[activeTask].querySelector('.task-today');
+                
+                if (timeEl) timeEl.textContent = formatTime(currentTime);
+                if (todayEl) todayEl.textContent = `Сегодня: ${formatTime(totalTime)}`;
+            }
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            // Для демонстрации используем текущие данные
+            // В реальном приложении нужно анализировать данные за неделю/месяц
+            
+            const statsData = {
+                labels: tasks.map(task => task.name),
+                data: tasks.map((task, index) => {
+                    // В реальном приложении нужно учитывать выбранный период
+                    return todayTotal[index] ? Math.floor(todayTotal[index] / (1000 * 60)) : 0;
+                }),
+                colors: tasks.map(task => task.color)
+            };
+            
+            renderChart(statsData);
+            renderStatsSummary(statsData);
+        }
+
+        // Рендер круговой диаграммы
+        function renderChart(data) {
+            if (statsChart) {
+                statsChart.destroy();
+            }
+            
+            statsChart = new Chart(statsChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value} мин`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Рендер текстовой статистики
+        function renderStatsSummary(data) {
+            let html = '<h3>Общее время: ';
+            
+            const totalMinutes = data.data.reduce((sum, val) => sum + val, 0);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            html += `${hours} ч ${minutes} мин</h3>`;
+            
+            data.labels.forEach((label, index) => {
+                const minutes = data.data[index];
+                if (minutes > 0) {
+                    const hours = Math.floor(minutes / 60);
+                    const mins = minutes % 60;
+                    const timeStr = hours > 0 ? `${hours} ч ${mins} мин` : `${mins} мин`;
+                    
+                    html += `
+                        <div class="stats-item">
+                            <div class="stats-color" style="background: ${data.colors[index]}"></div>
+                            <div>${label}: ${timeStr}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            statsSummary.innerHTML = html;
+        }
+
+        // Форматирование времени
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            return [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                seconds.toString().padStart(2, '0')
+            ].join(':');
+        }
+
+        // Сохранение задач
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Загрузка сегодняшних результатов
+        function loadTodayTotals() {
+            const today = new Date().toLocaleDateString();
+            const savedData = localStorage.getItem(`todayTotals_${today}`);
+            todayTotal = savedData ? JSON.parse(savedData) : {};
+        }
+
+        // Сохранение сегодняшних результатов
+        function saveTodayTotals() {
+            const today = new Date().toLocaleDateString();
+            localStorage.setItem(`todayTotals_${today}`, JSON.stringify(todayTotal));
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            addBtn.addEventListener('click', addTask);
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+            
+            selectedIcon.addEventListener('click', () => {
+                iconDropdown.classList.toggle('show');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.icon-select')) {
+                    iconDropdown.classList.remove('show');
+                }
+            });
+            
+            statsTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    statsTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentPeriod = tab.dataset.period;
+                    updateStats();
+                });
+            });
+        }
+
+        // Запуск приложения
+        init();
+    </script>
+</body>
+</html>
